@@ -59,7 +59,7 @@ A versatile essential that fits seamlessly into both festive and daily styling."
   <div class="search-panel">
     <div class="search-input-row">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      <input id="searchInput" type="text" placeholder="Search products..." autocomplete="off" oninput="window.runSearch(this.value)" />
+      <input id="searchInput" type="text" placeholder="Search products..." autocomplete="off" oninput="window.runSearch(this.value)" onkeydown="if(event.key==='Enter') window.goToSearchPage(this.value)" />
       <button class="search-close" aria-label="Close search" onclick="window.toggleSearch()">✕</button>
     </div>
     <div class="search-results" id="searchResults"></div>
@@ -248,6 +248,12 @@ A versatile essential that fits seamlessly into both festive and daily styling.<
     document.body.style.overflow = opening ? 'hidden' : '';
   };
 
+  window.goToSearchPage = function(q){
+    q = q.trim();
+    if (!q) return;
+    window.location.href = '/search.html?q=' + encodeURIComponent(q);
+  };
+
   window.runSearch = function(q){
     if (!index) { results.innerHTML = ''; return; }
     q = q.trim().toLowerCase();
@@ -266,7 +272,7 @@ A versatile essential that fits seamlessly into both festive and daily styling.<
         '<img src="' + p.image + '" alt="' + p.name + '" />' +
         '<div><h5>' + p.name + '</h5><span>' + p.category + '</span></div>' +
         '</a>';
-    }).join('');
+    }).join('') + '<a class="search-see-all" href="/search.html?q=' + encodeURIComponent(q) + '">See all results for "' + q.replace(/</g,'') + '"</a>';
   };
 
   document.addEventListener('keydown', function(e){

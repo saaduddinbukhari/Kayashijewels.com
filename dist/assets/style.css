@@ -301,6 +301,11 @@ footer a:hover { color:#fff; }
 .search-result h5 { font-family:'Jost',sans-serif; font-weight:500; font-size:14px; color:var(--ink); margin:0 0 3px; }
 .search-result span { font-size:12px; color: var(--ink-soft); }
 .search-empty { padding: 30px 20px; text-align:center; color: var(--ink-soft); font-size:14px; }
+.search-see-all {
+  display:block; text-align:center; padding: 14px; margin-top:4px; border-top:1px solid var(--ivory-deep);
+  font-size:12.5px; letter-spacing:0.06em; text-transform:uppercase; color: var(--wine); font-weight:600;
+}
+.search-see-all:hover { color: var(--wine-deep); }
 @media (max-width: 620px) { .search-panel { margin-top: 0; max-height: 100vh; height:100vh; max-width:100%; border-radius:0; } }
 
 /* ---- mobile drawer ---- */

@@ -114,7 +114,7 @@ function header() {
   <div class="search-panel">
     <div class="search-input-row">
       ${searchIcon(20)}
-      <input id="searchInput" type="text" placeholder="Search products..." autocomplete="off" oninput="window.runSearch(this.value)" />
+      <input id="searchInput" type="text" placeholder="Search products..." autocomplete="off" oninput="window.runSearch(this.value)" onkeydown="if(event.key==='Enter') window.goToSearchPage(this.value)" />
       <button class="search-close" aria-label="Close search" onclick="window.toggleSearch()">✕</button>
     </div>
     <div class="search-results" id="searchResults"></div>
@@ -205,6 +205,12 @@ function searchScript() {
     document.body.style.overflow = opening ? 'hidden' : '';
   };
 
+  window.goToSearchPage = function(q){
+    q = q.trim();
+    if (!q) return;
+    window.location.href = '/search.html?q=' + encodeURIComponent(q);
+  };
+
   window.runSearch = function(q){
     if (!index) { results.innerHTML = ''; return; }
     q = q.trim().toLowerCase();
@@ -223,7 +229,7 @@ function searchScript() {
         '<img src="' + p.image + '" alt="' + p.name + '" />' +
         '<div><h5>' + p.name + '</h5><span>' + p.category + '</span></div>' +
         '</a>';
-    }).join('');
+    }).join('') + '<a class="search-see-all" href="/search.html?q=' + encodeURIComponent(q) + '">See all results for "' + q.replace(/</g,'') + '"</a>';
   };
 
   document.addEventListener('keydown', function(e){
@@ -569,13 +575,103 @@ ${footer()}`;
   fs.writeFileSync(path.join(DIST, 'products', p.handle + '.html'), html);
 }
 
+function buildSearchPage() {
+  CURRENT_DEPTH = 0;
+  const maxMoq = Math.max(...products.map(p => p.moq));
+  const html = `${head('Search Results', 'Search - ' + site.name)}
+${header()}
+<div class="container">
+  <div class="coll-hero" style="padding-bottom:0;">
+    <div class="eyebrow">Search</div>
+    <h1 id="searchPageTitle">Search Results</h1>
+  </div>
+  <div class="browse-layout" style="padding-top:36px;">
+    ${filtersSidebar(maxMoq)}
+    <div>
+      <div class="listing-toolbar">
+        <span class="item-count" id="itemCount">Searching…</span>
+        <select class="sort-select" onchange="window.applySort(this.value)">
+          <option value="">Sort: Featured</option>
+          <option value="az">Alphabetically, A-Z</option>
+          <option value="za">Alphabetically, Z-A</option>
+          <option value="moq-asc">MOQ, low to high</option>
+          <option value="moq-desc">MOQ, high to low</option>
+        </select>
+      </div>
+      <div class="grid grid-4" id="productGrid"></div>
+    </div>
+  </div>
+</div>
+${footer()}
+${listingScript()}
+${searchResultsPageScript()}`;
+  fs.writeFileSync(path.join(DIST, 'search.html'), html);
+}
+
+function searchResultsPageScript() {
+  const icon = waIcon(16);
+  return `<script>
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var q = (params.get('q') || '').trim();
+  var titleEl = document.getElementById('searchPageTitle');
+  var countEl = document.getElementById('itemCount');
+  var grid = document.getElementById('productGrid');
+
+  if (!q) {
+    titleEl.textContent = 'Search';
+    countEl.textContent = '0 items';
+    grid.innerHTML = '<div class="empty">Type something into the search bar above to find products.</div>';
+    return;
+  }
+
+  titleEl.textContent = 'Search results for "' + q + '"';
+  document.title = 'Search results for "' + q + '" | ${site.name}';
+
+  fetch('/assets/search-index.json').then(function(r){ return r.json(); }).then(function(index){
+    var ql = q.toLowerCase();
+    var matches = index.filter(function(p){
+      return p.name.toLowerCase().indexOf(ql) !== -1 ||
+             p.category.toLowerCase().indexOf(ql) !== -1 ||
+             p.collections.join(' ').toLowerCase().indexOf(ql) !== -1;
+    });
+
+    countEl.textContent = matches.length + ' item' + (matches.length === 1 ? '' : 's');
+
+    if (!matches.length) {
+      grid.innerHTML = '<div class="empty">No products found for "' + q.replace(/</g,'') + '". Try a different search term, or browse by <a href="/categories/index.html">category</a> or <a href="/collections/index.html">collection</a>.</div>';
+      return;
+    }
+
+    grid.innerHTML = matches.map(function(p){
+      return '<div class="product-card" data-moq="' + p.moq + '" data-instock="' + (p.inStock ? 1 : 0) + '" data-name="' + p.name.replace(/"/g,'&quot;') + '">' +
+        '<a href="' + p.url + '">' +
+          '<div class="frame">' +
+            (!p.inStock ? '<span class="tag-instock" style="background:var(--ink-soft);">Out of stock</span>' : '') +
+            '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy" />' +
+          '</div>' +
+          '<h4>' + p.name + '</h4>' +
+        '</a>' +
+        '<div class="moq-row">MOQ: ' + p.moq + ' pcs</div>' +
+        '<a class="enquire-btn" href="' + p.enquireUrl + '" target="_blank" rel="noopener">${icon} Enquire on WhatsApp</a>' +
+      '</div>';
+    }).join('');
+  });
+})();
+</script>`;
+}
+
 function buildSearchIndex() {
   const index = products.map(p => ({
+    handle: p.handle,
     name: p.name,
     category: categoryOf(p.category) ? categoryOf(p.category).name : p.category,
     collections: (p.collections || []).map(h => collectionOf(h) ? collectionOf(h).name : h),
     image: productImg(p),
-    url: '/products/' + p.handle + '.html'
+    moq: p.moq,
+    inStock: p.inStock !== false,
+    url: '/products/' + p.handle + '.html',
+    enquireUrl: waLink(p)
   }));
   fs.writeFileSync(path.join(DIST, 'assets', 'search-index.json'), JSON.stringify(index));
 }
@@ -594,6 +690,7 @@ buildCategoriesIndex();
 buildCollectionsIndex();
 collections.forEach(buildCollectionPage);
 products.forEach(buildProductPage);
+buildSearchPage();
 buildSearchIndex();
 
 console.log(`Built ${products.length} products, ${categories.length} categories, ${collections.length} collections.`);
