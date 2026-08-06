@@ -78,7 +78,7 @@ function header() {
     </nav>
     <a class="logo" href="${link('index.html')}"><img src="${site.logo}" alt="${site.name}" /></a>
     <div class="header-actions">
-      <button class="icon-btn" aria-label="Search">${searchIcon()}</button>
+      <button class="icon-btn" aria-label="Search" onclick="window.toggleSearch()">${searchIcon()}</button>
       <a class="icon-btn" href="https://wa.me/${site.whatsappNumber}" target="_blank" rel="noopener" aria-label="WhatsApp">${waIcon(20)}</a>
       <button class="hamburger">☰</button>
     </div>
@@ -87,11 +87,22 @@ function header() {
     ${categories.map(c => `<a href="${link('categories/' + c.handle + '.html')}">${c.name}</a>`).join('')}
     ${collections.map(c => `<a href="${link('collections/' + c.handle + '.html')}">${c.name}</a>`).join('')}
   </div>
-</header>`;
+</header>
+
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-panel">
+    <div class="search-input-row">
+      ${searchIcon(20)}
+      <input id="searchInput" type="text" placeholder="Search products..." autocomplete="off" oninput="window.runSearch(this.value)" />
+      <button class="search-close" aria-label="Close search" onclick="window.toggleSearch()">✕</button>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>`;
 }
 
-function searchIcon() {
-  return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`;
+function searchIcon(size = 18) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`;
 }
 
 function ornament() {
@@ -134,7 +145,63 @@ function footer() {
   </div>
 </footer>
 <a class="float-wa" href="https://wa.me/${site.whatsappNumber}" target="_blank" rel="noopener">${waIcon(26)}</a>
+${searchScript()}
 </body></html>`;
+}
+
+function searchScript() {
+  return `<script>
+(function(){
+  var index = null;
+  var box = document.getElementById('searchOverlay');
+  var input = document.getElementById('searchInput');
+  var results = document.getElementById('searchResults');
+
+  window.toggleSearch = function(){
+    var opening = !box.classList.contains('open');
+    box.classList.toggle('open');
+    if (opening) {
+      document.body.style.overflow = 'hidden';
+      setTimeout(function(){ input.focus(); }, 50);
+      if (!index) {
+        fetch('/assets/search-index.json').then(function(r){ return r.json(); }).then(function(d){ index = d; });
+      }
+    } else {
+      document.body.style.overflow = '';
+      input.value = '';
+      results.innerHTML = '';
+    }
+  };
+
+  window.runSearch = function(q){
+    if (!index) { results.innerHTML = ''; return; }
+    q = q.trim().toLowerCase();
+    if (!q) { results.innerHTML = ''; return; }
+    var matches = index.filter(function(p){
+      return p.name.toLowerCase().indexOf(q) !== -1 ||
+             p.category.toLowerCase().indexOf(q) !== -1 ||
+             p.collections.join(' ').toLowerCase().indexOf(q) !== -1;
+    }).slice(0, 8);
+    if (!matches.length) {
+      results.innerHTML = '<div class="search-empty">No products found for "' + q.replace(/</g,'') + '".</div>';
+      return;
+    }
+    results.innerHTML = matches.map(function(p){
+      return '<a class="search-result" href="' + p.url + '">' +
+        '<img src="' + p.image + '" alt="' + p.name + '" />' +
+        '<div><h5>' + p.name + '</h5><span>' + p.category + '</span></div>' +
+        '</a>';
+    }).join('');
+  };
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && box.classList.contains('open')) window.toggleSearch();
+  });
+  box.addEventListener('click', function(e){
+    if (e.target === box) window.toggleSearch();
+  });
+})();
+</script>`;
 }
 
 function productCard(p) {
@@ -468,6 +535,17 @@ ${footer()}`;
   fs.writeFileSync(path.join(DIST, 'products', p.handle + '.html'), html);
 }
 
+function buildSearchIndex() {
+  const index = products.map(p => ({
+    name: p.name,
+    category: categoryOf(p.category) ? categoryOf(p.category).name : p.category,
+    collections: (p.collections || []).map(h => collectionOf(h) ? collectionOf(h).name : h),
+    image: productImg(p),
+    url: '/products/' + p.handle + '.html'
+  }));
+  fs.writeFileSync(path.join(DIST, 'assets', 'search-index.json'), JSON.stringify(index));
+}
+
 // ---------------- RUN ----------------
 fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(DIST, { recursive: true });
@@ -482,5 +560,6 @@ buildCategoriesIndex();
 buildCollectionsIndex();
 collections.forEach(buildCollectionPage);
 products.forEach(buildProductPage);
+buildSearchIndex();
 
 console.log(`Built ${products.length} products, ${categories.length} categories, ${collections.length} collections.`);
