@@ -80,7 +80,7 @@ function header() {
     <div class="header-actions">
       <button class="icon-btn" aria-label="Search" onclick="window.toggleSearch()">${searchIcon()}</button>
       <a class="icon-btn" href="https://wa.me/${site.whatsappNumber}" target="_blank" rel="noopener" aria-label="WhatsApp">${waIcon(20)}</a>
-      <button class="hamburger">☰</button>
+      <button class="hamburger" aria-label="Menu" onclick="window.toggleDrawer()">☰</button>
     </div>
   </div>
   <div class="subnav">
@@ -88,6 +88,27 @@ function header() {
     ${collections.map(c => `<a href="${link('collections/' + c.handle + '.html')}">${c.name}</a>`).join('')}
   </div>
 </header>
+
+<div class="drawer-overlay" id="drawerOverlay" onclick="window.toggleDrawer()"></div>
+<nav class="mobile-drawer" id="mobileDrawer">
+  <div class="drawer-head">
+    <img src="${site.logo}" alt="${site.name}" />
+    <button class="search-close" aria-label="Close menu" onclick="window.toggleDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
+    <a href="${link('categories/all.html')}">Jewellery</a>
+    <a href="${link('categories/index.html')}">Categories</a>
+    <a href="${link('collections/index.html')}">Collections</a>
+    <a href="${link('about.html')}">About Us</a>
+    <div class="drawer-divider"></div>
+    <span class="drawer-label">Shop by Category</span>
+    ${categories.map(c => `<a href="${link('categories/' + c.handle + '.html')}">${c.name}</a>`).join('')}
+    <div class="drawer-divider"></div>
+    <span class="drawer-label">Collections</span>
+    ${collections.map(c => `<a href="${link('collections/' + c.handle + '.html')}">${c.name}</a>`).join('')}
+  </div>
+  <a class="btn btn-primary drawer-cta" href="https://wa.me/${site.whatsappNumber}" target="_blank" rel="noopener">${waIcon(16)} Chat on WhatsApp</a>
+</nav>
 
 <div class="search-overlay" id="searchOverlay">
   <div class="search-panel">
@@ -156,9 +177,12 @@ function searchScript() {
   var box = document.getElementById('searchOverlay');
   var input = document.getElementById('searchInput');
   var results = document.getElementById('searchResults');
+  var drawer = document.getElementById('mobileDrawer');
+  var drawerOverlay = document.getElementById('drawerOverlay');
 
   window.toggleSearch = function(){
     var opening = !box.classList.contains('open');
+    if (opening && drawer.classList.contains('open')) window.toggleDrawer(); // don't allow both open at once
     box.classList.toggle('open');
     if (opening) {
       document.body.style.overflow = 'hidden';
@@ -171,6 +195,14 @@ function searchScript() {
       input.value = '';
       results.innerHTML = '';
     }
+  };
+
+  window.toggleDrawer = function(){
+    var opening = !drawer.classList.contains('open');
+    if (opening && box.classList.contains('open')) window.toggleSearch(); // don't allow both open at once
+    drawer.classList.toggle('open');
+    drawerOverlay.classList.toggle('open');
+    document.body.style.overflow = opening ? 'hidden' : '';
   };
 
   window.runSearch = function(q){
@@ -195,7 +227,9 @@ function searchScript() {
   };
 
   document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape' && box.classList.contains('open')) window.toggleSearch();
+    if (e.key !== 'Escape') return;
+    if (box.classList.contains('open')) window.toggleSearch();
+    if (drawer.classList.contains('open')) window.toggleDrawer();
   });
   box.addEventListener('click', function(e){
     if (e.target === box) window.toggleSearch();
