@@ -471,7 +471,7 @@ ${header()}
 <section class="coll-hero" style="padding-bottom:36px;"><h1>Collections</h1></section>
 <section style="padding-top:0;"><div class="container grid grid-4">
 ${sorted.map(c => `
-<a class="coll-tile" href="${link(c.handle + '.html')}">
+<a class="coll-tile" href="${link('collections/' + c.handle + '.html')}">
   <div class="frame"><img src="${c.image}" alt="${c.name}" /></div>
   <h3>${c.name}</h3>
 </a>`).join('')}
