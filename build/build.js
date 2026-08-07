@@ -68,7 +68,6 @@ function link(p) { return rel(p); }
 
 function header() {
   return `
-<div class="announce">Subscribe for new designs &amp; styling ideas — enjoy 5% off your first order</div>
 <header class="site-header">
   <div class="header-row">
     <nav class="main-nav">
@@ -341,7 +340,7 @@ function buildHome() {
   const featured = products.slice(0, 8);
   const html = `${head(site.name, site.about)}
 ${header()}
-<section class="hero">
+<section class="hero" style="background-image: linear-gradient(0deg, rgba(20,14,10,0.55) 0%, rgba(20,14,10,0.05) 55%), url('${site.heroImage}');">
   <div class="hero-inner">
     <h1>${site.tagline}</h1>
     <p class="tagline-sub">Discover jewellery that feels personal, beautiful and timeless.</p>
@@ -681,6 +680,13 @@ fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(DIST, { recursive: true });
 fs.mkdirSync(path.join(DIST, 'assets'), { recursive: true });
 fs.copyFileSync(path.join(__dirname, 'style.css'), path.join(DIST, 'assets', 'style.css'));
+
+// Copy self-hosted images (from scripts/download-images.mjs) into dist, if
+// they've been downloaded. Safe no-op before that script has ever been run.
+const SRC_IMAGES = path.join(ROOT, 'assets-src');
+if (fs.existsSync(SRC_IMAGES)) {
+  fs.cpSync(SRC_IMAGES, path.join(DIST, 'assets'), { recursive: true });
+}
 
 buildHome();
 buildAbout();

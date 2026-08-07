@@ -146,4 +146,28 @@ if (missingImage.length) {
   console.log(`\n⚠ ${missingImage.length} products have no image yet (falling back to their collection's placeholder photo):`);
   console.log(missingImage.join(', '));
 }
+
+// ---- sync collection descriptions from the "Categories and Collections" sheet
+// into data/collections.json (name/image/handle stay as previously set there —
+// only the description field gets overwritten when the sheet has one).
+const collMetaPath = path.join(ROOT, 'data/collections.json');
+if (wb.Sheets['Categories and Collections']) {
+  const collRows = XLSX.utils.sheet_to_json(wb.Sheets['Categories and Collections'], { defval: '' });
+  const descMap = {};
+  for (const r of collRows) {
+    const name = cleanText(r['Collections']);
+    const desc = cleanText(r['Collection Description']);
+    if (name && desc) descMap[slug(name)] = desc;
+  }
+  if (Object.keys(descMap).length && fs.existsSync(collMetaPath)) {
+    const meta = JSON.parse(fs.readFileSync(collMetaPath, 'utf8'));
+    let updated = 0;
+    meta.collections.forEach(c => {
+      if (descMap[c.handle]) { c.description = descMap[c.handle]; updated++; }
+    });
+    fs.writeFileSync(collMetaPath, JSON.stringify(meta, null, 2));
+    console.log(`\nUpdated ${updated} collection descriptions in data/collections.json from the sheet.`);
+  }
+}
+
 console.log('\nNow run: node build/build.js');

@@ -1,24 +1,85 @@
 {
   "categories": [
-    { "handle": "earrings", "name": "Earrings", "image": "https://kayashijewels.com/cdn/shop/collections/KE_35_2.png?v=1770873818&width=800" },
-    { "handle": "necklaces", "name": "Necklaces & Malas", "image": "https://kayashijewels.com/cdn/shop/collections/Necklace_Mala_1.png?v=1770873922&width=800" },
-    { "handle": "bracelets", "name": "Bracelets", "image": "https://kayashijewels.com/cdn/shop/collections/Bracelets_3.png?v=1770873970&width=800" },
-    { "handle": "sets", "name": "Sets", "image": "https://kayashijewels.com/cdn/shop/collections/Sets.png?v=1770818481&width=800" },
-    { "handle": "hair-accessories", "name": "Hair Accessories", "image": "https://kayashijewels.com/cdn/shop/collections/Hair_accessories_1.png?v=1770873871&width=800" }
+    {
+      "handle": "earrings",
+      "name": "Earrings",
+      "image": "/assets/categories/earrings.png"
+    },
+    {
+      "handle": "necklaces",
+      "name": "Necklaces & Malas",
+      "image": "/assets/categories/necklaces.png"
+    },
+    {
+      "handle": "bracelets",
+      "name": "Bracelets",
+      "image": "/assets/categories/bracelets.png"
+    },
+    {
+      "handle": "sets",
+      "name": "Sets",
+      "image": "/assets/categories/sets.png"
+    },
+    {
+      "handle": "hair-accessories",
+      "name": "Hair Accessories",
+      "image": "/assets/categories/hair-accessories.png"
+    }
   ],
   "collections": [
-    { "handle": "noor", "name": "Noor", "image": "https://kayashijewels.com/cdn/shop/collections/NOOR.png?v=1770098344&width=800", "description": "Light, luminous pieces for everyday elegance." },
-    { "handle": "dravya", "name": "Dravya", "image": "https://kayashijewels.com/cdn/shop/collections/DRAVYA.png?v=1770098292&width=800", "description": "Rich, festive Kundan designs." },
-    { "handle": "hiranya", "name": "Hiranya", "image": "https://kayashijewels.com/cdn/shop/collections/HIRANYA.png?v=1770098469&width=800", "description": "Gold-toned classics with timeless appeal." },
-    { "handle": "jodha", "name": "Jodha", "image": "https://kayashijewels.com/cdn/shop/collections/RANGMANCH_06a65793-cbb3-4c1e-8fa3-a8e4546c7203.png?v=1770098243&width=800", "description": "Regal choker sets inspired by royal courts." },
-    { "handle": "rangmanch", "name": "Rangmanch", "image": "https://kayashijewels.com/cdn/shop/collections/RANGMANCH.png?v=1770098054&width=800", "description": "Rangmanch is where colour takes centre stage. Bold Takkar stones in deep ruby and emerald tones with classic Kundan detailing, designed to feel expressive and confident." },
-    { "handle": "roohani", "name": "Roohani", "image": "https://kayashijewels.com/cdn/shop/collections/ROOHANI_1.png?v=1770098613&width=800", "description": "Soft, romantic pieces with a gentle finish." },
-    { "handle": "samudrika", "name": "Samudrika", "image": "https://kayashijewels.com/cdn/shop/collections/SAMUDRIKA.png?v=1770098539&width=800", "description": "Ocean-inspired pearl and stone designs." },
-    { "handle": "vanika", "name": "Vanika", "image": "https://kayashijewels.com/cdn/shop/collections/VANIKA.png?v=1770098433&width=800", "description": "Nature-inspired motifs in fine detailing." }
+    {
+      "handle": "noor",
+      "name": "Noor",
+      "image": "/assets/collections/noor.png",
+      "description": "Soft sparkle meets refined elegance in the Noor collection. Crafted with premium American diamonds and precision plating, these designs offer a luminous finish that works effortlessly from day to night. Think delicate brilliance, graceful forms, and jewellery that elevates without overpowering. Noor is ideal for intimate occasions, celebrations, or when you want everyday luxury to feel easy and wearable."
+    },
+    {
+      "handle": "dravya",
+      "name": "Dravya",
+      "image": "/assets/collections/dravya.png",
+      "description": "Dravya draws strength from nature’s elements. Featuring semi-precious stones and onyx malas, this collection focuses on texture, depth, and grounding energy. Designed to be layered or worn solo, Dravya jewellery feels tactile, purposeful, and deeply personal, understated yet powerful."
+    },
+    {
+      "handle": "hiranya",
+      "name": "Hiranya",
+      "image": "/assets/collections/hiranya.png",
+      "description": "Named after the Sanskrit word for gold, Hiranya honours tradition while embracing modern style. This collection ranges from temple-inspired jewellery with antique finishes to sleek haslis, bangles, and bracelets designed for everyday wear. Hiranya pieces are rich in detail, strong in presence, and timeless in appeal, made to tell stories that last."
+    },
+    {
+      "handle": "jodha",
+      "name": "Jodha",
+      "image": "/assets/collections/jodha.png",
+      "description": "Jodha reimagines traditional Kundan and Polki jewellery through a modern lens. Rooted in heritage craftsmanship, each piece features hand-set stones, warm gold tones, and silhouettes that pair beautifully with both ethnic and fusion wear. This collection is made for those who appreciate tradition but prefer styling it their own way, bold, elegant, and confidently contemporary."
+    },
+    {
+      "handle": "rangmanch",
+      "name": "Rangmanch",
+      "image": "/assets/collections/rangmanch.png",
+      "description": "Rangmanch is where colour takes centre stage. Inspired by performance, drama, and heritage aesthetics, this collection brings together bold Takkar stones in deep ruby and emerald tones with classic Kundan detailing. Every piece is designed to feel expressive and confident, whether you’re dressing for a festive celebration or adding impact to a simpler look. Rich finishes and statement silhouettes make Rangmanch jewellery impossible to overlook."
+    },
+    {
+      "handle": "roohani",
+      "name": "Roohani",
+      "image": "/assets/collections/roohani.png",
+      "description": "Roohani is vibrant, expressive, and full of character. Featuring fancy-cut stones, colourful accents, statement chokers, and playful earrings, this collection is designed to reflect joy and individuality. Perfect for festive layering or standout looks, Roohani adds colour, movement, and a hint of magic to every outfit."
+    },
+    {
+      "handle": "samudrika",
+      "name": "Samudrika",
+      "image": "/assets/collections/samudrika.png",
+      "description": "Inspired by the calm depth of the sea, Samudrika celebrates the timeless beauty of pearls. Fluid shapes, gentle lustre, and understated elegance define this collection. From minimal everyday designs to sculpted statement pieces, Samudrika jewellery feels soothing, refined, and quietly powerful, much like the ocean itself."
+    },
+    {
+      "handle": "vanika",
+      "name": "Vanika",
+      "image": "/assets/collections/vanika.png",
+      "description": "Featuring intricately detailed oxidised silver and antique gold finishes, these pieces speak in texture not trends."
+    }
   ],
   "site": {
     "name": "Kayashi Jewels",
-    "logo": "https://kayashijewels.com/cdn/shop/files/Kayashi_Header_Logo-removebg-preview.png?height=120&v=1766828430",
+    "logo": "/assets/site/logo.png",
+    "heroImage": "/assets/site/hero.png",
     "whatsappNumber": "919873901022",
     "instagram": "https://www.instagram.com/kayashijewels",
     "tagline": "Elegant. Handcrafted. Made for every story.",

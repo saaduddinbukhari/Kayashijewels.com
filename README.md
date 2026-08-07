@@ -51,6 +51,27 @@ replace them one by one, no need to do all 37 at once.
 npx serve dist
 ```
 
+## Stop depending on Shopify's CDN (do this before cancelling Shopify)
+
+Every image on the site — product photos, category/collection thumbnails,
+the logo, the homepage hero — is currently loaded live from Shopify's CDN
+(`cdn.shopify.com` / `kayashijewels.com/cdn/shop/...`). That's fine while
+the Shopify subscription is still active, but if those URLs go dead after
+cancelling it, the whole site loses its images.
+
+Fix, once, before cancelling Shopify:
+
+```bash
+node scripts/download-images.mjs
+node build/build.js
+```
+
+This downloads every image into `assets-src/` (committed to git) and
+rewrites `data/products.json` / `data/collections.json` to point at those
+local files instead of Shopify's URLs. Safe to re-run — already-downloaded
+files are skipped, not re-fetched. Needs normal internet access (not
+running from a restricted sandbox), so run it from your own machine.
+
 ## Deploy to Render (free) — do this now to start testing
 
 Since you've already got a Render account set up for her, everything lives
